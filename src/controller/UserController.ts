@@ -47,7 +47,7 @@ export class UserController {
         nickname: req.body.nickname,
         email: req.body.email,
         password: req.body.password,
-        role: req.body.role
+        // role: req.body.role
       })
 
       console.log(input)
@@ -102,7 +102,7 @@ export class UserController {
         newNickname: req.body.nickname,
         newEmail: req.body.email,
         newPassword: req.body.password,
-        newRole: req.body.role
+        // // newRole: req.body.role
       })
 
       const output = await this.userBusiness.updateUser(input)

@@ -7,7 +7,7 @@ export interface UpdateUserInputDTO {
   newNickname: string,
   newEmail: string,
   newPassword: string,
-  newRole: string
+  // newRole: string
 }
 
 export interface UpdateUserOutputDTO {
@@ -17,7 +17,7 @@ export interface UpdateUserOutputDTO {
       nickname: string,
       email: string,
       password: string,
-      role: string,
+      // role: string,
       createdAt: string
   }
 }
@@ -29,5 +29,5 @@ export const UpdateUserSchema = z.object({
   newNickname: z.string().min(2).optional(),
   newEmail: z.string().email().optional(),
   newPassword: z.string().min(4).optional(),
-  newRole: z.string().min(4).optional()
+  // newRole: z.string().min(4).optional()
 }).transform(data => data as UpdateUserInputDTO)

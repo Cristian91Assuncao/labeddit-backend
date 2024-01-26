@@ -1,12 +1,12 @@
-export enum USER_ROLES {
-  NORMAL = "NORMAL",
-  ADMIN = "ADMIN"
-}
+// export enum USER_ROLES {
+//   NORMAL = "NORMAL",
+//   ADMIN = "ADMIN"
+// }
 
 export interface tokenPayload {
     id: string,
     nickname: string,
-    role: USER_ROLES
+    // role: USER_ROLES
 }
 
 export interface UserDB {
@@ -14,7 +14,7 @@ export interface UserDB {
   nickname: string,
   email: string,
   password: string,
-  role: USER_ROLES,
+//   role: USER_ROLES,
   created_at: string
 }
 
@@ -23,7 +23,7 @@ export interface UserModel {
   id: string,
   nickname: string,
   email: string,
-  role: USER_ROLES,
+//   role: USER_ROLES,
   createdAt: string
 }
 
@@ -33,7 +33,7 @@ export class User {
         private nickname: string,
         private email: string,
         private password: string,
-        private role: USER_ROLES,
+        // private role: USER_ROLES,
         private createdAt: string
     ) {}
 
@@ -69,13 +69,13 @@ export class User {
         this.password = value
     }
 
-    public getRole(): USER_ROLES {
-        return this.role
-    }
+    // public getRole(): USER_ROLES {
+    //     return this.role
+    // }
 
-    public setRole(value: USER_ROLES): void {
-        this.role = value
-    }
+    // public setRole(value: USER_ROLES): void {
+    //     this.role = value
+    // }
 
     public getCreatedAt(): string {
         return this.createdAt
@@ -92,7 +92,7 @@ export class User {
             nickname: this.nickname,
             email: this.email,
             password: this.password,
-            role: this.role,
+            // role: this.role,
             created_at: this.createdAt
         }
     }
@@ -103,7 +103,7 @@ export class User {
             id: this.id,
             nickname: this.nickname,
             email: this.email,
-            role: this.role,
+            // role: this.role,
             createdAt: this.createdAt
         }
     }

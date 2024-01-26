@@ -5,7 +5,7 @@ import { GetUsersInputDTO, GetUsersOutputDTO } from "../dtos/users/getUsers.dto"
 import { UpdateUserInputDTO, UpdateUserOutputDTO } from "../dtos/users/updateUser.dto";
 import { BadRequestError } from "../errors/BadRequestError";
 import { NotFoundError } from "../errors/NotFoundError";
-import { USER_ROLES, User, UserDB, UserModel } from "../models/User";
+import { User, UserDB, UserModel } from "../models/User";
 import { TokenManager, TokenPayload } from "../services/TokenManager";
 import { LoginInputDTO, LoginOutputDTO } from "../dtos/users/login.dto";
 import { HashManager } from "../services/HashManager";
@@ -28,9 +28,9 @@ export class UserBusiness {
       throw new BadRequestError("Token inválido")
     }
 
-    if (payload.role !== USER_ROLES.ADMIN) {
-      throw new BadRequestError("Acesso inválido, acesso somente por ADMINS")
-    }
+    // if (payload.role !== USER_ROLES.ADMIN) {
+    //   throw new BadRequestError("Acesso inválido, acesso somente por ADMINS")
+    // }
 
     const usersDB = await this.userDatabase.findUsers(nicknameToSearch)
 
@@ -40,7 +40,7 @@ export class UserBusiness {
       userDB.nickname,
       userDB.email,
       userDB.password,
-      userDB.role as USER_ROLES,
+      // userDB.role as USER_ROLES,
       userDB.created_at
     )
 
@@ -48,7 +48,7 @@ export class UserBusiness {
       id: user.getId(),
       nickname: user.getNickname(),
       email: user.getEmail(),
-      role: user.getRole(),
+      // role: user.getRole(),
       createdAt: user.getCreatedAt()
     }
   
@@ -79,7 +79,7 @@ export class UserBusiness {
       nickname,
       email,
       hashedPassword,
-      USER_ROLES.ADMIN,
+      // USER_ROLES.ADMIN,
       new Date().toISOString()
     )
 
@@ -89,7 +89,7 @@ export class UserBusiness {
     const payload: TokenPayload = {
       id: newUser.getId(),
       nickname: newUser.getNickname(),
-      role: newUser.getRole()
+      // role: newUser.getRole()
     }
 
     const token = this.tokenManager.createToken(payload)
@@ -122,14 +122,14 @@ export class UserBusiness {
       userDB.nickname,
       userDB.email,
       userDB.password,
-      userDB.role,
+      // userDB.role,
       userDB.created_at
     )
 
     const payload: TokenPayload = {
       id: user.getId(),
       nickname: user.getNickname(),
-      role: user.getRole()
+      // role: user.getRole()
     }
 
     const token = this.tokenManager.createToken(payload)
@@ -150,7 +150,7 @@ export class UserBusiness {
       newNickname,
       newEmail,
       newPassword,
-      newRole
+      // newRole
     } = input
 
     const userDB = await this.userDatabase.findUserById(idToEdit)
@@ -164,7 +164,7 @@ export class UserBusiness {
       userDB.nickname,
       userDB.email,
       userDB.password,
-      userDB.role as USER_ROLES,
+      // // userDB.role as USER_ROLES,
       userDB.created_at
     )
 
@@ -172,14 +172,14 @@ export class UserBusiness {
     newNickname && user.setNickname(newNickname)
     newEmail && user.setEmail(newEmail)
     newPassword && user.setPassword(newPassword)
-    newRole && user.setRole(newRole as USER_ROLES)
+    // // // // newRole && user.setRole(newRole as USER_ROLES)
 
     const newUserDB: UserDB = {
       id: user.getId(),
       nickname: user.getNickname(),
       email: user.getEmail(),
       password: user.getPassword(),
-      role: user.getRole(),
+      // // role: user.getRole(),
       created_at: user.getCreatedAt()
     }
 
@@ -192,7 +192,7 @@ export class UserBusiness {
         nickname: user.getNickname(),
         email: user.getEmail(),
         password: user.getPassword(),
-        role: user.getRole(),
+        // // role: user.getRole(),
         createdAt: user.getCreatedAt()
       }
     }
@@ -222,7 +222,7 @@ export class UserBusiness {
       userDB.nickname,
       userDB.email,
       userDB.password,
-      userDB.role as USER_ROLES,
+      // // userDB.role as USER_ROLES,
       userDB.created_at
     );
     return user;
