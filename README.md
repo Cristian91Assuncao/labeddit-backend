@@ -41,8 +41,7 @@ https://github.com/Cristian91Assuncao/labeddit-frontend/
 
 # Deploy Labeddit Frontend
 
-https://blue-loaf.surge.sh/
-
+https://strange-snow.surge.sh/
 
 # Deploy Labeddit Backend
 
