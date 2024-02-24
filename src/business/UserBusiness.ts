@@ -1,15 +1,15 @@
 import { UserDatabase } from "../database/UserDatabase";
-import { SignupInputDTO, SignupOutputDTO } from "../dtos/users/signup.dto";
 import { DeleteUserInputDTO } from "../dtos/users/deleteUser.dto";
 import { GetUsersInputDTO, GetUsersOutputDTO } from "../dtos/users/getUsers.dto";
+import { LoginInputDTO, LoginOutputDTO } from "../dtos/users/login.dto";
+import { SignupInputDTO, SignupOutputDTO } from "../dtos/users/signup.dto";
 import { UpdateUserInputDTO, UpdateUserOutputDTO } from "../dtos/users/updateUser.dto";
 import { BadRequestError } from "../errors/BadRequestError";
 import { NotFoundError } from "../errors/NotFoundError";
-import { User, UserDB, UserModel } from "../models/User";
-import { TokenManager, TokenPayload } from "../services/TokenManager";
-import { LoginInputDTO, LoginOutputDTO } from "../dtos/users/login.dto";
+import {  TokenPayload, User, UserDB, UserModel } from "../models/User";
 import { HashManager } from "../services/HashManager";
 import { IdGenerator } from "../services/IdGenerator";
+import { TokenManager } from "../services/TokenManager";
 
 export class UserBusiness {
   constructor(
@@ -51,8 +51,9 @@ export class UserBusiness {
       // role: user.getRole(),
       createdAt: user.getCreatedAt()
     }
+
   
-    return UserModel
+    return user.toBusinessModel()
   })
 
   const output: GetUsersOutputDTO = users
@@ -63,16 +64,15 @@ export class UserBusiness {
   public signup = async (input: SignupInputDTO): Promise<SignupOutputDTO> => {
 
     const { nickname, email, password } = input
+    
+    const isEmailRegistered = await this.userDatabase.findUserByEmail(email)
 
-    const id = this.idGenerator.generate()
-
-    const hashedPassword = await this.hashManager.hash(password)
-
-    const userDBExists = await this.userDatabase.findUserById(id)
-
-    if (userDBExists) {
-      throw new BadRequestError("'id' já existe")
+    if (isEmailRegistered) {
+      throw new BadRequestError("email já existe")
     }
+    
+    const id = this.idGenerator.generate()
+    const hashedPassword = await this.hashManager.hash(password)
 
     const newUser = new User(
       id,
@@ -90,12 +90,13 @@ export class UserBusiness {
       id: newUser.getId(),
       nickname: newUser.getNickname(),
       // role: newUser.getRole()
-    }
+      // USER_ROLES.NORMAL,
+      // new Date().toISOString()
+    }  
 
     const token = this.tokenManager.createToken(payload)
 
     const output: SignupOutputDTO = {
-      message: "User registrado com sucesso",
       token
     }
     return output
@@ -103,28 +104,30 @@ export class UserBusiness {
   }
 
   public login = async (input: LoginInputDTO): Promise<LoginOutputDTO> => {
+
     const { email, password } = input
 
-    const userDB = await this.userDatabase.findUserByEmail(email)
+    const UserDB = await this.userDatabase.findUserByEmail(email)
 
-    if (!userDB) {
-      throw new NotFoundError("'email' não encontrado")
+    if (!UserDB) {
+      throw new NotFoundError("Email não possui cadastro")
     }
 
-    const isPasswordCorrect = await this.hashManager.compare(password, userDB.password)
+    const user = new User(
+      UserDB.id,
+      UserDB.nickname,
+      UserDB.email,
+      UserDB.password,
+      // UserDB.role,
+      UserDB.created_at,
+    )
+
+    const hashedPassword = user.getPassword()
+    const isPasswordCorrect = await this.hashManager.compare(password, hashedPassword)
 
     if (!isPasswordCorrect) {
-      throw new BadRequestError("'email' ou 'password' incorretos")
+      throw new BadRequestError("Senha incorreta")
     }
-    
-    const user = new User(
-      userDB.id,
-      userDB.nickname,
-      userDB.email,
-      userDB.password,
-      // userDB.role,
-      userDB.created_at
-    )
 
     const payload: TokenPayload = {
       id: user.getId(),
@@ -142,91 +145,89 @@ export class UserBusiness {
     return output
   }
 
-  public updateUser = async (input: UpdateUserInputDTO): Promise<UpdateUserOutputDTO> => {
+  // public updateUser = async (input: UpdateUserInputDTO): Promise<UpdateUserOutputDTO> => {
 
-    const {
-      idToEdit,
-      newId,
-      newNickname,
-      newEmail,
-      newPassword,
-      // newRole
-    } = input
+  //   const {
+  //     idToEdit,
+  //     newId,
+  //     newNickname,
+  //     newEmail,
+  //     newPassword,
+  //     // newRole
+  //   } = input
 
-    const userDB = await this.userDatabase.findUserById(idToEdit)
+  //   const userDB = await this.userDatabase.findUserById(idToEdit)
 
-    if (!userDB) {
-      throw new NotFoundError("'id' não encontrado")
-    }
+  //   if (!userDB) {
+  //     throw new NotFoundError("'id' não encontrado")
+  //   }
 
-    const user = new User(
-      userDB.id,
-      userDB.nickname,
-      userDB.email,
-      userDB.password,
-      // // userDB.role as USER_ROLES,
-      userDB.created_at
-    )
+  //   const user = new User(
+  //     userDB.id,
+  //     userDB.nickname,
+  //     userDB.email,
+  //     userDB.password,
+  //     // // userDB.role as USER_ROLES,
+  //     userDB.created_at
+  //   )
 
-    newId && user.setId(newId)
-    newNickname && user.setNickname(newNickname)
-    newEmail && user.setEmail(newEmail)
-    newPassword && user.setPassword(newPassword)
-    // // // // newRole && user.setRole(newRole as USER_ROLES)
+  //   newId && user.setId(newId)
+  //   newNickname && user.setNickname(newNickname)
+  //   newEmail && user.setEmail(newEmail)
+  //   newPassword && user.setPassword(newPassword)
+  //   // // // // newRole && user.setRole(newRole as USER_ROLES)
 
-    const newUserDB: UserDB = {
-      id: user.getId(),
-      nickname: user.getNickname(),
-      email: user.getEmail(),
-      password: user.getPassword(),
-      // // role: user.getRole(),
-      created_at: user.getCreatedAt()
-    }
+  //   const newUserDB: UserDB = {
+  //     id: user.getId(),
+  //     nickname: user.getNickname(),
+  //     email: user.getEmail(),
+  //     password: user.getPassword(),
+  //     // // role: user.getRole(),
+  //     created_at: user.getCreatedAt()
+  //   }
 
-    await this.userDatabase.updateUser(idToEdit, newUserDB)
+  //   await this.userDatabase.updateUser(idToEdit, newUserDB)
 
-    const output: UpdateUserOutputDTO = {
-      message: "Usuário atualizado",
-      user: {
-        id: user.getId(),
-        nickname: user.getNickname(),
-        email: user.getEmail(),
-        password: user.getPassword(),
-        // // role: user.getRole(),
-        createdAt: user.getCreatedAt()
-      }
-    }
-    return output
+  //   const output: UpdateUserOutputDTO = {
+  //     message: "Usuário atualizado",
+  //     user: {
+  //       id: user.getId(),
+  //       nickname: user.getNickname(),
+  //       email: user.getEmail(),
+  //       password: user.getPassword(),
+  //       // // role: user.getRole(),
+  //       createdAt: user.getCreatedAt()
+  //     }
+  //   }
+  //   return output
 
-  }
+  // }
 
-  public deleteUser = async (input: DeleteUserInputDTO): Promise<User> => {
-    const { idToDelete } = input
+  // public deleteUser = async (input: DeleteUserInputDTO): Promise<User> => {
+  //   const { idToDelete } = input
 
-    if (idToDelete !== undefined) {
-      if (typeof idToDelete !== "string") {
-        throw new BadRequestError("'id' deve ser string")
-      }
-    }
+  //   if (idToDelete !== undefined) {
+  //     if (typeof idToDelete !== "string") {
+  //       throw new BadRequestError("'id' deve ser string")
+  //     }
+  //   }
 
-    const userDB = await this.userDatabase.findUserById(idToDelete)
+  //   const userDB = await this.userDatabase.findUserById(idToDelete)
 
-    if (!userDB) {
-      throw new BadRequestError("'User' não encontrado")
-    }
+  //   if (!userDB) {
+  //     throw new BadRequestError("'User' não encontrado")
+  //   }
 
-    await this.userDatabase.deleteUser(idToDelete)
+  //   await this.userDatabase.deleteUser(idToDelete)
 
-    const user: User = new User(
-      userDB.id,
-      userDB.nickname,
-      userDB.email,
-      userDB.password,
-      // // userDB.role as USER_ROLES,
-      userDB.created_at
-    );
-    return user;
-  }
-
-
+  //   const user: User = new User(
+  //     userDB.id,
+  //     userDB.nickname,
+  //     userDB.email,
+  //     userDB.password,
+  //     // // userDB.role as USER_ROLES,
+  //     userDB.created_at
+  //   );
+  //   return user;
+  // }
 }

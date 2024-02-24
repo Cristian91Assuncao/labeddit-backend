@@ -1,33 +1,32 @@
-export interface PostDB {
-
+export interface CommentDB {
     id: string,
+    post_id: string,
     creator_id: string,
     content: string,
     likes: number,
     dislikes: number,
-    comments: number,
     created_at: string,
     updated_at: string
 }
 
-export interface PostDBWithCreatorNickname {
+export interface CommentDBWithCreatorNickname {
     id: string,
+    post_id: string,
     creator_id: string,
     content: string,
     likes: number,
     dislikes: number,
-    comments: number,
     created_at: string,
     updated_at: string,
     creator_nickname: string
 }
 
-export interface PostModel {
+export interface CommentModel {
     id: string,
+    postId: string,
     content: string,
     likes: number,
     dislikes: number,
-    comments: number,
     createdAt: string,
     updatedAt: string,
     creator: {
@@ -36,24 +35,24 @@ export interface PostModel {
     }
 }
 
-export interface LikeDislikePostDB {
+export interface LikeDislikeCommentDB {
     user_id: string,
-    post_id: string,
+    comment_id: string,
     like: number
 }
 
-export enum POST_LIKES {
+export enum COMMENT_LIKES {
     LIKED = "ALREADY LIKED",
     DISLIKED = "ALREADY DISLIKED"
 }
 
-export class Post {
+export class Comment {
     constructor(
         private id: string,
+        private postId: string,
         private content: string,
         private likes: number,
         private dislikes: number,
-        private comments: number,
         private createdAt: string,
         private updatedAt: string,
         private creatorId: string,
@@ -66,6 +65,14 @@ export class Post {
 
     public setId(value: string): void {
         this.id = value
+    }
+
+    public getPostId(): string {
+        return this.postId
+    }
+
+    public setPostId(value: string): void {
+        this.postId = value
     }
 
     public getContent(): string {
@@ -90,14 +97,6 @@ export class Post {
 
     public setDislikes(value: number): void {
         this.dislikes = value
-    }
-
-    public getComments(): number {
-        return this.comments
-    }
-
-    public setComments(value: number): void {
-        this.comments = value
     }
 
     public addLike = (): void => {
@@ -148,26 +147,26 @@ export class Post {
         this.creatorNickname = value
     }
 
-    public toDBModel(): PostDB {
+    public toDBModel(): CommentDB {
         return {
             id: this.id,
+            post_id: this.postId,
             creator_id: this.creatorId,
             content: this.content,
             likes: this.likes,
             dislikes: this.dislikes,
-            comments: this.comments,
             created_at: this.createdAt,
             updated_at: this.updatedAt
         }
     }
 
-    public toBusinessModel(): PostModel {
+    public toBusinessModel(): CommentModel {
         return {
             id: this.id,
+            postId: this.postId,
             content: this.content,
             likes: this.likes,
             dislikes: this.dislikes,
-            comments: this.comments,
             createdAt: this.createdAt,
             updatedAt: this.updatedAt,
             creator: { 

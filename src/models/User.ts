@@ -3,7 +3,7 @@
 //   ADMIN = "ADMIN"
 // }
 
-export interface tokenPayload {
+export interface TokenPayload {
     id: string,
     nickname: string,
     // role: USER_ROLES
@@ -28,6 +28,7 @@ export interface UserModel {
 }
 
 export class User {    
+
     constructor(
         private id: string,
         private nickname: string,
@@ -40,7 +41,7 @@ export class User {
     public getId(): string {
         return this.id
     }
-    
+
     public setId(value: string): void {
         this.id = value
     }
@@ -98,6 +99,7 @@ export class User {
     }
 
     // para facilitar nossa vida, temos o método que gera um UserModel
+
     public toBusinessModel(): UserModel {
         return {
             id: this.id,
