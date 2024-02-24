@@ -46,7 +46,7 @@ https://blue-loaf.surge.sh/
 
 # Deploy Labeddit Backend
 
-
+https://projeto-labeddit-backend-u5bj.onrender.com
 
 ## Tecnologias Utilizadas
 

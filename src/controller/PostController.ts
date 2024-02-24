@@ -1,20 +1,20 @@
 import { Request, Response } from "express"
-import { PostBusiness } from "../business/PostBusiness"
 import { ZodError } from "zod"
 import { BaseError } from "../errors/BaseError"
-import { CreatePostSchema } from "../dtos/posts/createPost.dto"
 import { GetPostsSchema } from "../dtos/posts/getPosts.dto"
 import { LikeOrDislikePostSchema } from "../dtos/posts/likeOrDislikePost.dto"
+import { PostsBusiness } from "../business/PostsBusiness"
+import { CreatePostsSchema } from "../dtos/posts/createPosts.dto"
 
 
 export class PostController {
   constructor(
-    private postBusiness: PostBusiness
+    private postBusiness: PostsBusiness
   ) { }
 
   public createPost = async (req: Request, res: Response) => {
     try {
-      const input = CreatePostSchema.parse({
+      const input = CreatePostsSchema.parse({
         content: req.body.content,
         token: req.headers.authorization
       })

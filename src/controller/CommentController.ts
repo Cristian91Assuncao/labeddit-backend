@@ -1,10 +1,10 @@
 import { Request, Response } from "express"
 import { ZodError } from "zod"
 import { BaseError } from "../errors/BaseError"
-import { CreateCommentSchema } from "../dtos/comments/createComment.dto"
 import { GetCommentsInputDTO, GetCommentsSchema } from "../dtos/comments/getComments.dto"
 import { LikeOrDislikeCommentSchema } from "../dtos/comments/likeOrDislikeComment.dto"
-import { CommentsBusiness } from "../business/CommentBusiness"
+import { CreateCommentsSchema } from "../dtos/comments/createComments.dto"
+import { CommentsBusiness } from "../business/CommentsBusiness"
 
 
 export class CommentsController {
@@ -15,7 +15,7 @@ export class CommentsController {
   //endpoints requisiçao
   public createComment = async (req: Request, res: Response) => {
     try {
-      const input = CreateCommentSchema.parse({
+      const input = CreateCommentsSchema.parse({
         content: req.body.content,
         postId: req.params.post_id,
         token: req.headers.authorization
