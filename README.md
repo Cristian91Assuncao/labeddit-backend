@@ -41,7 +41,7 @@ https://github.com/Cristian91Assuncao/labeddit-frontend/
 
 # Deploy Labeddit Frontend
 
-https://strange-snow.surge.sh/
+https://venomous-nerve.surge.sh/
 
 # Deploy Labeddit Backend
 
